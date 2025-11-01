@@ -46,13 +46,12 @@ questionsRouter.get("/random", async (req, res) => {
       .collection<Question>("questions")
       .aggregate([
         { $sample: { size: 1 } },
-        { $project: { text: 1, options: 1 } } // NEM küldjük a correctIndex-et!
+        { $project: { text: 1, options: 1 } } 
       ])
       .toArray();
 
     if (!docs[0]) return res.status(404).json({ error: "No questions yet" });
 
-    // tegyük vissza az _id-t stringként
     const q = docs[0];
     return res.json({ id: (q as any)._id.toString(), text: q.text, options: q.options });
   } catch (e) {
@@ -61,24 +60,24 @@ questionsRouter.get("/random", async (req, res) => {
   }
 });
 
-// 2) Válasz ellenőrzése
-questionsRouter.post("/check", async (req, res) => {
-  try {
-    const { id, answerIndex } = req.body as { id?: string; answerIndex?: number };
-    if (!id || !Number.isInteger(answerIndex)) {
-      return res.status(400).json({ error: "id and answerIndex required" });
-    }
-    const db = getDb();
-    const q = await db
-      .collection<Question>("questions")
-      .findOne({ _id: new ObjectId(id) }, { projection: { correctIndex: 1 } });
+questionsRouter.get("/by-movie/:id", async (req, res) => {
+  const movieId = Number(req.params.id);
+  if (!movieId) return res.status(400).json({ error: "movieId invalid" });
 
-    if (!q) return res.status(404).json({ error: "Question not found" });
+  const db = getDb();
+  const questions = await db
+    .collection<Question>("questions")
+    .aggregate([{ $match: { movieId } }, { $sample: { size: 1 } }])
+    .toArray();
 
-    const correct = q.correctIndex === answerIndex;
-    return res.json({ correct, correctIndex: q.correctIndex });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "Server error" });
-  }
+  if (questions.length === 0)
+    return res.status(404).json({ error: "Nincs kérdés ehhez a filmhez" });
+
+  const q = questions[0];
+  res.json({
+    id: q._id,
+    text: q.text,
+    options: q.options,
+  });
+
 });

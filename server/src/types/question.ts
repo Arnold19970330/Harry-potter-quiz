@@ -4,6 +4,7 @@ export interface Question {
   options: [string, string, string, string]; // pontosan 4 opció
   correctIndex: 0 | 1 | 2 | 3; // 0–3 közötti szám
   explanation?: string;
+  movieId: number, 
   createdAt?: Date;
 }
 

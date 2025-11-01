@@ -18,13 +18,25 @@ export function validateNewQuestion(body: any): Validation {
   // options
   if (!Array.isArray(body.options) || body.options.length !== 4) {
     errors.push("Options must be an array of exactly 4 strings.");
-  } else if (!body.options.every((o: unknown) => typeof o === "string" && o.trim() !== "")) {
+  } else if (
+    !body.options.every(
+      (o: unknown) => typeof o === "string" && o.trim() !== ""
+    )
+  ) {
     errors.push("Each option must be a non-empty string.");
   }
 
   // correctIndex
-  if (!Number.isInteger(body.correctIndex) || body.correctIndex < 0 || body.correctIndex > 3) {
+  if (
+    !Number.isInteger(body.correctIndex) ||
+    body.correctIndex < 0 ||
+    body.correctIndex > 3
+  ) {
     errors.push("correctIndex must be an integer between 0 and 3.");
+  }
+
+  if (!Number.isInteger(body.movieId)){
+    errors.push("Ki kell választanod egy filmet.");
   }
 
   // explanation (opcionális)

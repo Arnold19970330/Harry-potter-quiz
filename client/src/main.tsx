@@ -1,14 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { QuestionForm } from "./components/QuestionForm";
+import "./index.css";
+import { StartPage } from "./pages/StartPage";
 import { PlayPage } from "./pages/PlayPage";
-import './index.css'
-import App from './App.tsx'
+import { SummaryPage } from "./pages/SummaryPage";
 
 const router = createBrowserRouter([
-  { path: "/", element: <PlayPage /> },
-  { path: "/admin/new", element: <App><QuestionForm /></App> }, // ha az App a keret, maradhat így
+  { path: "/", element: <StartPage /> },
+  { path: "/play", element: <PlayPage /> },
+  { path: "/summary", element: <SummaryPage /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
